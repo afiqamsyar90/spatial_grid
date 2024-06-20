@@ -1,0 +1,60 @@
+---
+title: "Grid_points"
+author: "afiq_amsyar"
+format: html
+editor: visual
+---
+
+## Introduction
+
+Grid points help in breaking down the map into smaller, manageable sections, making it easier to perform spatial analysis. Grid points are used in geostatistics to model spatial patterns and predict values. They help in understanding the spatial distribution and variability of phenomena. This example demonstrates how to create and plot grid points, which can then be used for various spatial analyses and applications as discussed.
+
+### Packages
+
+```{r}
+library(sf)
+library(ggplot2)
+```
+
+### Load shapefile
+
+```{r}
+selangor <- st_read ("Selangor_dun.geojson")
+```
+
+### Define Range and Resolution
+
+```{r}
+lat_range <- seq(1,7,by = 0.25)
+long_range <- seq (100,104.5, by = 0.25)
+```
+
+### Create a grid of latitude and longitude
+
+```{r}
+grid <- expand.grid(lon = long_range, lat = lat_range)
+```
+
+### Convert the grid to an SF object
+
+```{r}
+grid_sf <- st_as_sf(grid, coords = c ("lon", "lat"), crs = 4326)
+```
+
+### Extract points within Selangor shapefile
+
+```{r}
+points_within_selangor <- st_intersection(grid_sf,selangor)
+```
+
+### Plot the grid points within the Selangor shapefile 
+
+```{r}
+ggplot() +
+  geom_sf(data = selangor, fill = NA, color = "black") +
+  geom_sf(data = points_within_selangor, color = "blue", size = 2.5, shape = 3) +
+  labs(title = "Grid Points within Selangor",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+```
